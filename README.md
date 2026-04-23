@@ -1,36 +1,152 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Craig
 
-## Getting Started
+Craig is a local-first autonomous AI software engineer built for real project work.
 
-First, run the development server:
+It takes natural-language product requests, inspects a workspace, edits files, runs commands, and streams execution back through a polished operator console.
+
+This project is designed as a portfolio-grade demonstration of:
+- AI product design
+- local agent workflows
+- streaming UI systems
+- tool-using LLMs
+- full-stack TypeScript engineering
+
+## What Craig Does
+
+- Accepts software tasks in plain English
+- Streams model output in real time
+- Reads and writes files inside a configured workspace
+- Runs shell commands with safety checks
+- Keeps secrets in environment variables instead of hard-coding them
+- Uses Ollama locally for private, local-first model inference
+
+## Why This Project Matters
+
+Craig is not just a chatbot UI.
+
+It is a practical autonomous coding agent interface focused on the real workflow of building software:
+- understand the request
+- inspect the codebase
+- make changes
+- run commands
+- report results
+
+That makes it a strong portfolio project for AI engineer, product engineer, and full-stack roles where you need to show more than static UI work.
+
+## Tech Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Vercel AI SDK
+- Ollama
+- `ollama-ai-provider-v2`
+
+## Current Model
+
+Craig is currently configured to use:
+
+```bash
+qwen2.5-coder:7b
+```
+
+This is a much better fit for coding tasks than a smaller general chat model.
+
+## Local Setup
+
+Clone the repo and install dependencies:
+
+```bash
+npm install
+```
+
+Create your local env file if needed:
+
+```bash
+cp .env.example .env.local
+```
+
+Start Ollama with the compatibility workaround used on this machine:
+
+```bash
+env OLLAMA_NEW_ENGINE=0 ollama serve
+```
+
+In another terminal, run the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+Example:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+OLLAMA_MODEL=qwen2.5-coder:7b
+CRAIG_WORKSPACE_ROOT=.
+PUMPFUN_API_TOKEN=
+SOLANA_RPC_URL=
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Notes:
+- `.env.local` is ignored by Git
+- secrets should never be committed
+- the default model can be changed without touching code
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Demo Flow
 
-## Deploy on Vercel
+A good demo prompt for Craig:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```text
+Build a premium SaaS dashboard with authentication, a sortable table, filters, and a clean activity feed.
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+What the viewer should see:
+- polished agent UI
+- clear prompt submission
+- streaming assistant output
+- visible timeline of file reads, writes, and commands
+- real coding-agent behavior rather than a static mock
+
+## Portfolio Talking Points
+
+Use these in interviews, GitHub descriptions, or project summaries:
+
+- Built a local-first autonomous coding agent with Next.js, Vercel AI SDK, and Ollama
+- Designed a streaming agent console for natural-language software task execution
+- Implemented safe workspace tools for file inspection, file editing, and command execution
+- Integrated local model inference for privacy-preserving AI workflows
+- Built a portfolio-ready AI product that demonstrates full-stack engineering and agent UX design
+
+## Safety Notes
+
+Craig includes basic command and filesystem safeguards:
+- blocks obviously dangerous shell patterns
+- restricts file access to the configured workspace
+- avoids exposing token values in responses
+
+This project is still a portfolio prototype, not a production sandbox.
+
+## Roadmap
+
+- Improve structured rendering for tool calls and command results
+- Add a richer file diff view
+- Add session history and task persistence
+- Add model/settings controls in the UI
+- Package the app into a desktop experience after the workflow is fully stable
+
+## Repo
+
+GitHub:
+
+```bash
+https://github.com/christopherlhammer11-ai/craig
+```
