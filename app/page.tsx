@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import {
   ArrowRight,
   Bot,
@@ -75,6 +76,60 @@ function getMessageText(message: {
     .map((part) => part.text)
     .join("\n\n")
     .trim();
+}
+
+function renderMarkdown(text: string) {
+  const parts: Array<{ type: "text" | "code"; content: string; lang?: string }> = [];
+  const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: "text", content: text.slice(lastIndex, match.index) });
+    }
+    parts.push({ type: "code", content: match[2], lang: match[1] || undefined });
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push({ type: "text", content: text.slice(lastIndex) });
+  }
+
+  return parts.map((part, i) => {
+    if (part.type === "code") {
+      return (
+        <div key={i} className="my-3 overflow-x-auto rounded-xl border border-white/10 bg-black/40">
+          {part.lang ? (
+            <div className="border-b border-white/10 px-4 py-1.5 text-xs font-medium text-zinc-500">
+              {part.lang}
+            </div>
+          ) : null}
+          <pre className="p-4 text-sm leading-6 text-zinc-200">
+            <code>{part.content}</code>
+          </pre>
+        </div>
+      );
+    }
+    // Render inline code with backticks
+    const inlineSegments = part.content.split(/(`[^`]+`)/g);
+    return (
+      <span key={i} className="whitespace-pre-wrap">
+        {inlineSegments.map((seg, j) =>
+          seg.startsWith("`") && seg.endsWith("`") ? (
+            <code
+              key={j}
+              className="rounded bg-white/10 px-1.5 py-0.5 text-[13px] text-teal-200"
+            >
+              {seg.slice(1, -1)}
+            </code>
+          ) : (
+            <span key={j}>{seg}</span>
+          )
+        )}
+      </span>
+    );
+  });
 }
 
 function truncate(value: string, max = 120) {
@@ -170,13 +225,19 @@ function extractActivities(messages: Array<{ id?: string; parts: Array<Record<st
 
 export default function Craig() {
   const [task, setTask] = useState("");
+  const [followUp, setFollowUp] = useState("");
+  const consoleEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, status, error } = useChat({
-    api: "/api/chat",
+    transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
   const isLoading = status === "submitted" || status === "streaming";
   const hasMessages = messages.length > 0;
+
+  useEffect(() => {
+    consoleEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
   const activities = useMemo(
     () =>
@@ -238,6 +299,16 @@ export default function Craig() {
     });
 
     setTask("");
+  }
+
+  async function onFollowUp(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const value = followUp.trim();
+    if (!value || isLoading) return;
+
+    await sendMessage({ text: value });
+    setFollowUp("");
   }
 
   return (
@@ -504,7 +575,9 @@ export default function Craig() {
                               )}
                             </div>
 
-                            <div className="whitespace-pre-wrap">{message.text}</div>
+                            <div className={message.role === "user" ? "whitespace-pre-wrap" : ""}>
+                              {message.role === "user" ? message.text : renderMarkdown(message.text)}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -521,24 +594,53 @@ export default function Craig() {
                           {error.message}
                         </div>
                       ) : null}
+
+                      <div ref={consoleEndRef} />
                     </div>
                   )}
                 </div>
 
-                <div className="grid gap-3 border-t border-white/10 bg-black/20 p-4 md:grid-cols-3">
-                  <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-zinc-400">
-                    <CheckCircle2 className="size-4 text-emerald-300" />
-                    Streaming UI messages
+                {hasMessages ? (
+                  <form
+                    onSubmit={onFollowUp}
+                    className="flex items-center gap-3 border-t border-white/10 bg-black/20 p-4"
+                  >
+                    <input
+                      type="text"
+                      value={followUp}
+                      onChange={(e) => setFollowUp(e.target.value)}
+                      placeholder="Send a follow-up..."
+                      disabled={isLoading}
+                      className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none transition focus:border-teal-300/30 focus:ring-1 focus:ring-teal-300/20 disabled:opacity-50"
+                    />
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !followUp.trim()}
+                      className="h-11 bg-teal-300 px-5 font-semibold text-zinc-950 hover:bg-teal-200 disabled:opacity-40"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <Send className="size-4" />
+                      )}
+                    </Button>
+                  </form>
+                ) : (
+                  <div className="grid gap-3 border-t border-white/10 bg-black/20 p-4 md:grid-cols-3">
+                    <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-zinc-400">
+                      <CheckCircle2 className="size-4 text-emerald-300" />
+                      Streaming UI messages
+                    </div>
+                    <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-zinc-400">
+                      <Terminal className="size-4 text-sky-300" />
+                      Visible command execution
+                    </div>
+                    <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-zinc-400">
+                      <ShieldCheck className="size-4 text-teal-200" />
+                      Secret-safe local workflow
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-zinc-400">
-                    <Terminal className="size-4 text-sky-300" />
-                    Visible command execution
-                  </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2 text-sm text-zinc-400">
-                    <ShieldCheck className="size-4 text-teal-200" />
-                    Secret-safe local workflow
-                  </div>
-                </div>
+                )}
               </section>
             </div>
           </section>

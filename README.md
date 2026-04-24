@@ -92,14 +92,13 @@ Example:
 ```bash
 OLLAMA_MODEL=qwen2.5-coder:7b
 CRAIG_WORKSPACE_ROOT=.
-PUMPFUN_API_TOKEN=
-SOLANA_RPC_URL=
 ```
 
 Notes:
 - `.env.local` is ignored by Git
 - secrets should never be committed
 - the default model can be changed without touching code
+- `CRAIG_WORKSPACE_ROOT` defaults to the project root if not set
 
 ## Demo Flow
 

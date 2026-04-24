@@ -1,4 +1,4 @@
-import { convertToModelMessages, streamText, tool, type UIMessage } from "ai";
+import { convertToModelMessages, streamText, tool, type UIMessage, type ToolSet } from "ai";
 import { ollama } from "ollama-ai-provider-v2";
 import { z } from "zod";
 import { spawn } from "node:child_process";
@@ -73,11 +73,7 @@ function runWorkspaceCommand(command: string) {
     const child = spawn(command, {
       cwd: WORKSPACE_ROOT,
       shell: true,
-      env: {
-        ...process.env,
-        PUMPFUN_API_TOKEN: process.env.PUMPFUN_API_TOKEN || "",
-        SOLANA_RPC_URL: process.env.SOLANA_RPC_URL || "",
-      },
+      env: { ...process.env },
       stdio: ["ignore", "pipe", "pipe"],
     });
 
@@ -144,13 +140,14 @@ Your behavior:
 - When you change code, describe the files changed and why.
 - When you run commands, summarize the result clearly.
 - Do not reveal secrets or environment variable values.
-- Never hard-code private tokens, wallet keys, pump.fun credentials, Solana RPC keys, or API tokens.
-- Use environment variables such as PUMPFUN_API_TOKEN and SOLANA_RPC_URL for token integrations.
+- Never hard-code private tokens, API keys, or secrets in generated code.
+- Use environment variables for any sensitive configuration.
 
 Workspace:
 - Workspace root: ${WORKSPACE_ROOT}
 - You can list files, read files, write files, and run project commands through tools.
     `.trim(),
+    // Cast needed: Zod v4 generic inference doesn't fully resolve for tool() overloads
     tools: {
       listFiles: tool({
         description: "List files and folders inside the Craig workspace.",
@@ -160,7 +157,8 @@ Workspace:
             .default(".")
             .describe("Directory path relative to the workspace root."),
         }),
-        execute: async ({ directory }) => {
+        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        execute: async ({ directory }: { directory: string }) => {
           const targetPath = assertInsideWorkspace(directory);
           const exists = await pathExists(targetPath);
 
@@ -201,7 +199,8 @@ Workspace:
             .string()
             .describe("File path relative to the workspace root."),
         }),
-        execute: async ({ filePath }) => {
+        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        execute: async ({ filePath }: { filePath: string }) => {
           const targetPath = assertInsideWorkspace(filePath);
           const exists = await pathExists(targetPath);
 
@@ -247,7 +246,8 @@ Workspace:
             .describe("File path relative to the workspace root."),
           content: z.string().describe("Complete file contents to write."),
         }),
-        execute: async ({ filePath, content }) => {
+        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        execute: async ({ filePath, content }: { filePath: string; content: string }) => {
           const targetPath = assertInsideWorkspace(filePath);
 
           await fs.mkdir(path.dirname(targetPath), { recursive: true });
@@ -269,11 +269,12 @@ Workspace:
             .string()
             .describe("Command to run from the workspace root."),
         }),
-        execute: async ({ command }) => {
+        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        execute: async ({ command }: { command: string }) => {
           return runWorkspaceCommand(command);
         },
       }),
-    },
+    } as ToolSet,
   });
 
   return result.toUIMessageStreamResponse({
