@@ -2,7 +2,7 @@
 
 **Autonomous AI software builder.** Craig reads a workspace, plans a change, edits files, runs commands, and reports what happened in a way a human can review.
 
-Demo: **Watch the demo:** [Craig Coding Agent](https://christopherhammer.dev/assets/videos/narrated/project-demos/craig-coding-agent-narrated.mp4)  
+**Demo:** [Craig Coding Agent](https://christopherhammer.dev/assets/videos/narrated/project-demos/craig-coding-agent-narrated.mp4)  
 Portfolio: **Craig site:** [craigbuilds.dev](https://craigbuilds.dev)
 
 ## What Craig Does
