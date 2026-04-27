@@ -45,6 +45,11 @@ Craig's ideal flow:
 - Ollama local model path
 - Tool/workspace execution patterns
 
+## Architecture and Trust Docs
+
+- [Architecture](./ARCHITECTURE.md) - how the operator console, API route, model path, and workspace tools fit together
+- [Security Policy](./SECURITY.md) - current safeguards, known limits, and what production hardening would require
+
 ## Quick Start
 
 ```bash
@@ -60,6 +65,14 @@ ollama pull qwen2.5-coder:7b
 ollama serve
 ```
 
+## Checks
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
+
 ## Portfolio Context
 
 Craig is the builder layer in my portfolio: the project that turns the rest of the work into a workflow story. It also powers the local-business offer around websites, CRM, follow-up, and social content systems.
@@ -71,4 +84,3 @@ Built by **Christopher L. Hammer** - self-taught AI/product builder shipping loc
 - Portfolio: [christopherhammer.dev](https://christopherhammer.dev)
 - Proof demos: [https://christopherhammer.dev#proof](https://christopherhammer.dev#proof)
 - GitHub: [christopherlhammer11-ai](https://github.com/christopherlhammer11-ai)
-

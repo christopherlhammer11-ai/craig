@@ -157,7 +157,7 @@ Workspace:
             .default(".")
             .describe("Directory path relative to the workspace root."),
         }),
-        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        // @ts-expect-error - Zod v4 inference limitation with tool() overloads
         execute: async ({ directory }: { directory: string }) => {
           const targetPath = assertInsideWorkspace(directory);
           const exists = await pathExists(targetPath);
@@ -199,7 +199,7 @@ Workspace:
             .string()
             .describe("File path relative to the workspace root."),
         }),
-        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        // @ts-expect-error - Zod v4 inference limitation with tool() overloads
         execute: async ({ filePath }: { filePath: string }) => {
           const targetPath = assertInsideWorkspace(filePath);
           const exists = await pathExists(targetPath);
@@ -246,7 +246,7 @@ Workspace:
             .describe("File path relative to the workspace root."),
           content: z.string().describe("Complete file contents to write."),
         }),
-        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        // @ts-expect-error - Zod v4 inference limitation with tool() overloads
         execute: async ({ filePath, content }: { filePath: string; content: string }) => {
           const targetPath = assertInsideWorkspace(filePath);
 
@@ -269,7 +269,7 @@ Workspace:
             .string()
             .describe("Command to run from the workspace root."),
         }),
-        // @ts-ignore — Zod v4 inference limitation with tool() overloads
+        // @ts-expect-error - Zod v4 inference limitation with tool() overloads
         execute: async ({ command }: { command: string }) => {
           return runWorkspaceCommand(command);
         },
