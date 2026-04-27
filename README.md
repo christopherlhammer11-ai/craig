@@ -1,151 +1,74 @@
 # Craig
 
-Craig is a local-first autonomous AI software engineer built for real project work.
+**Autonomous AI software builder.** Craig reads a workspace, plans a change, edits files, runs commands, and reports what happened in a way a human can review.
 
-It takes natural-language product requests, inspects a workspace, edits files, runs commands, and streams execution back through a polished operator console.
-
-This project is designed as a portfolio-grade demonstration of:
-- AI product design
-- local agent workflows
-- streaming UI systems
-- tool-using LLMs
-- full-stack TypeScript engineering
+Demo: **Watch the demo:** [Craig Coding Agent](https://christopherhammer.dev/assets/videos/narrated/project-demos/craig-coding-agent-narrated.mp4)  
+Portfolio: **Craig site:** [craigbuilds.dev](https://craigbuilds.dev)
 
 ## What Craig Does
 
 - Accepts software tasks in plain English
-- Streams model output in real time
-- Reads and writes files inside a configured workspace
-- Runs shell commands with safety checks
-- Keeps secrets in environment variables instead of hard-coding them
-- Uses Ollama locally for private, local-first model inference
+- Inspects project files before changing them
+- Plans the smallest useful implementation path
+- Edits code with a reviewable diff mindset
+- Runs shell commands and reports results
+- Supports local-first model workflows through Ollama
+- Presents the work through an operator-style interface
 
-## Why This Project Matters
+## Why It Exists
 
-Craig is not just a chatbot UI.
+Most coding assistants feel like chat boxes that might write code. Craig is framed as a worker: understand the repo, do the task, run the check, show the result.
 
-It is a practical autonomous coding agent interface focused on the real workflow of building software:
-- understand the request
-- inspect the codebase
-- make changes
-- run commands
-- report results
+That makes it useful as a portfolio proof piece for AI product engineering, developer tooling, autonomous workflows, and full-stack TypeScript work.
 
-That makes it a strong portfolio project for AI engineer, product engineer, and full-stack roles where you need to show more than static UI work.
+## Real Workflow Example
+
+Ask:
+
+> Add PDF export to the report page.
+
+Craig's ideal flow:
+
+1. Read app routes, scripts, components, and nearby context
+2. Identify the report page and export boundary
+3. Make targeted edits instead of rewriting unrelated files
+4. Run the relevant build or test command
+5. Return changed files, command output, and next verification step
 
 ## Tech Stack
 
 - Next.js App Router
 - TypeScript
 - Tailwind CSS
-- shadcn/ui
+- shadcn/ui patterns
 - Vercel AI SDK
-- Ollama
-- `ollama-ai-provider-v2`
+- Ollama local model path
+- Tool/workspace execution patterns
 
-## Current Model
-
-Craig is currently configured to use:
-
-```bash
-qwen2.5-coder:7b
-```
-
-This is a much better fit for coding tasks than a smaller general chat model.
-
-## Local Setup
-
-Clone the repo and install dependencies:
+## Quick Start
 
 ```bash
 npm install
-```
-
-Create your local env file if needed:
-
-```bash
 cp .env.example .env.local
-```
-
-Start Ollama with the compatibility workaround used on this machine:
-
-```bash
-env OLLAMA_NEW_ENGINE=0 ollama serve
-```
-
-In another terminal, run the app:
-
-```bash
 npm run dev
 ```
 
-Open:
+If using Ollama locally:
 
 ```bash
-http://localhost:3000
+ollama pull qwen2.5-coder:7b
+ollama serve
 ```
 
-## Environment Variables
+## Portfolio Context
 
-Example:
+Craig is the builder layer in my portfolio: the project that turns the rest of the work into a workflow story. It also powers the local-business offer around websites, CRM, follow-up, and social content systems.
 
-```bash
-OLLAMA_MODEL=qwen2.5-coder:7b
-CRAIG_WORKSPACE_ROOT=.
-```
+---
 
-Notes:
-- `.env.local` is ignored by Git
-- secrets should never be committed
-- the default model can be changed without touching code
-- `CRAIG_WORKSPACE_ROOT` defaults to the project root if not set
+Built by **Christopher L. Hammer** - self-taught AI/product builder shipping local-first tools, demos, and real product surfaces.
 
-## Demo Flow
+- Portfolio: [christopherhammer.dev](https://christopherhammer.dev)
+- Proof demos: [https://christopherhammer.dev#proof](https://christopherhammer.dev#proof)
+- GitHub: [christopherlhammer11-ai](https://github.com/christopherlhammer11-ai)
 
-A good demo prompt for Craig:
-
-```text
-Build a premium SaaS dashboard with authentication, a sortable table, filters, and a clean activity feed.
-```
-
-What the viewer should see:
-- polished agent UI
-- clear prompt submission
-- streaming assistant output
-- visible timeline of file reads, writes, and commands
-- real coding-agent behavior rather than a static mock
-
-## Portfolio Talking Points
-
-Use these in interviews, GitHub descriptions, or project summaries:
-
-- Built a local-first autonomous coding agent with Next.js, Vercel AI SDK, and Ollama
-- Designed a streaming agent console for natural-language software task execution
-- Implemented safe workspace tools for file inspection, file editing, and command execution
-- Integrated local model inference for privacy-preserving AI workflows
-- Built a portfolio-ready AI product that demonstrates full-stack engineering and agent UX design
-
-## Safety Notes
-
-Craig includes basic command and filesystem safeguards:
-- blocks obviously dangerous shell patterns
-- restricts file access to the configured workspace
-- avoids exposing token values in responses
-
-This project is still a portfolio prototype, not a production sandbox.
-
-## Roadmap
-
-- Improve structured rendering for tool calls and command results
-- Add a richer file diff view
-- Add session history and task persistence
-- Add model/settings controls in the UI
-- Package the app into a desktop experience after the workflow is fully stable
-
-## Repo
-
-GitHub:
-
-```bash
-https://github.com/christopherlhammer11-ai/craig
-```
